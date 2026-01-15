@@ -1,0 +1,8 @@
+{
+  "name": "LingoWeb",
+  "short_name": "Lingo",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#58cc02",
+  "theme_color": "#58cc02"
+}
