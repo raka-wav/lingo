@@ -200,3 +200,7 @@ function startSpeaking(correctText) {
     }
   };
 }
+document.addEventListener("DOMContentLoaded", () => {
+  renderMap();
+  updateStats();
+});
