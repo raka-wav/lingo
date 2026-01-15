@@ -1,16 +1,34 @@
+/* ===================== DATA ===================== */
 const data = {
   unit1: [
-    { type: "mc", q: "Hello artinya?", o: ["Halo","Dadah"], a: "Halo" },
-    { type: "mc", q: "Cat artinya?", o: ["Kucing","Anjing"], a: "Kucing" }
+    { type: "mc", q: "Hello artinya?", o: ["Halo", "Dadah"], a: "Halo" },
+
+    {
+      type: "listen",
+      q: "Dengarkan dan pilih arti yang benar",
+      text: "Good morning",
+      o: ["Selamat pagi", "Selamat malam"],
+      a: "Selamat pagi"
+    },
+
+    {
+      type: "speak",
+      q: "Ucapkan kalimat ini",
+      text: "I love you"
+    }
   ],
+
   unit2: [
-    { type: "arrange", q: "Susun: I love you",
-      words: ["you","I","love"],
+    {
+      type: "arrange",
+      q: "Susun kalimat berikut",
+      words: ["you", "I", "love"],
       a: "I love you"
     }
   ]
 };
 
+/* ===================== STATE ===================== */
 let xp = Number(localStorage.getItem("xp")) || 0;
 let streak = Number(localStorage.getItem("streak")) || 0;
 let lastDate = localStorage.getItem("date");
@@ -20,59 +38,72 @@ let questions = [];
 let current = 0;
 let answerBox = "";
 
-updateStats();
-renderMap();
-updateStreak();
+/* ===================== INIT ===================== */
+document.addEventListener("DOMContentLoaded", () => {
+  updateStreak();
+  updateStats();
+  renderMap();
+});
 
+/* ===================== MAP ===================== */
 function renderMap() {
   const map = document.getElementById("map");
   map.innerHTML = "";
 
-  Object.keys(data).forEach((unit,i)=>{
+  Object.keys(data).forEach((unit, i) => {
     const div = document.createElement("div");
     div.className = "unit";
-    div.innerHTML = `<h2>Unit ${i+1}</h2>`;
-    const btn = document.createElement("div");
+    div.innerHTML = `<h2>Unit ${i + 1}</h2>`;
+
+    const btn = document.createElement("button");
     btn.className = "lesson";
     btn.innerText = "Start Lesson";
-    btn.onclick = ()=>startUnit(unit);
+    btn.onclick = () => startUnit(unit);
+
     div.appendChild(btn);
     map.appendChild(div);
   });
 }
 
+/* ===================== LESSON ===================== */
 function startUnit(unit) {
   questions = shuffle([...data[unit]]);
   current = 0;
+
   document.getElementById("map").classList.add("hidden");
   document.getElementById("quiz").classList.remove("hidden");
+
   loadQuestion();
 }
 
 function loadQuestion() {
   const q = questions[current];
+
   document.getElementById("question").innerText = q.q;
+
   const opt = document.getElementById("options");
   const bank = document.getElementById("word-bank");
   opt.innerHTML = "";
   bank.innerHTML = "";
 
+  /* MULTIPLE CHOICE */
   if (q.type === "mc") {
-    q.o.forEach(o=>{
+    q.o.forEach(o => {
       const b = document.createElement("button");
       b.innerText = o;
-      b.onclick = ()=>check(o,b);
+      b.onclick = () => check(o, b);
       opt.appendChild(b);
     });
   }
 
+  /* ARRANGE */
   if (q.type === "arrange") {
     answerBox = "";
-    shuffle(q.words).forEach(w=>{
+    shuffle(q.words).forEach(w => {
       const span = document.createElement("span");
       span.className = "word";
       span.innerText = w;
-      span.onclick = ()=>{
+      span.onclick = () => {
         answerBox += w + " ";
         span.remove();
         if (answerBox.trim() === q.a) correct();
@@ -80,9 +111,33 @@ function loadQuestion() {
       bank.appendChild(span);
     });
   }
+
+  /* LISTENING */
+  if (q.type === "listen") {
+    const play = document.createElement("button");
+    play.innerText = "🔊 Play Audio";
+    play.onclick = () => speakText(q.text);
+    opt.appendChild(play);
+
+    q.o.forEach(o => {
+      const b = document.createElement("button");
+      b.innerText = o;
+      b.onclick = () => check(o, b);
+      opt.appendChild(b);
+    });
+  }
+
+  /* SPEAKING */
+  if (q.type === "speak") {
+    const speakBtn = document.createElement("button");
+    speakBtn.innerText = "🎤 Mulai Bicara";
+    speakBtn.onclick = () => startSpeaking(q.text);
+    opt.appendChild(speakBtn);
+  }
 }
 
-function check(ans,btn) {
+/* ===================== CHECK ===================== */
+function check(ans, btn) {
   if (ans === questions[current].a) {
     btn.classList.add("correct");
     correct();
@@ -95,9 +150,10 @@ function correct() {
   xp += 10;
   save();
   current++;
-  setTimeout(()=>{
+
+  setTimeout(() => {
     current < questions.length ? loadQuestion() : endLesson();
-  },600);
+  }, 600);
 }
 
 function endLesson() {
@@ -106,13 +162,14 @@ function endLesson() {
   document.getElementById("map").classList.remove("hidden");
 }
 
+/* ===================== STATS ===================== */
 function save() {
-  localStorage.setItem("xp",xp);
+  localStorage.setItem("xp", xp);
   updateStats();
 }
 
 function updateStats() {
-  level = Math.floor(xp/50)+1;
+  level = Math.floor(xp / 50) + 1;
   document.getElementById("xp").innerText = xp;
   document.getElementById("level").innerText = level;
   document.getElementById("streak").innerText = streak;
@@ -122,85 +179,9 @@ function updateStreak() {
   const today = new Date().toDateString();
   if (today !== lastDate) {
     streak++;
-    localStorage.setItem("streak",streak);
-    localStorage.setItem("date",today);
+    localStorage.setItem("streak", streak);
+    localStorage.setItem("date", today);
   }
 }
 
-function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
-const data = {
-  unit1: [
-    { type: "mc", q: "Hello artinya?", o: ["Halo","Dadah"], a: "Halo" },
-
-    { type: "listen", 
-      q: "Dengarkan dan pilih arti yang benar",
-      text: "Good morning",
-      o: ["Selamat pagi", "Selamat malam"],
-      a: "Selamat pagi"
-    },
-
-    { type: "speak",
-      q: "Ucapkan kalimat ini",
-      text: "I love you"
-    }
-  ]
-};
-function speakText(text, lang="en-US") {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = lang;
-  speechSynthesis.speak(msg);
-}
-function speakText(text, lang="en-US") {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = lang;
-  speechSynthesis.speak(msg);
-}
-// LISTENING
-if (q.type === "listen") {
-  const btn = document.createElement("button");
-  btn.innerText = "🔊 Play Audio";
-  btn.onclick = ()=>speakText(q.text);
-  opt.appendChild(btn);
-
-  q.o.forEach(o=>{
-    const b = document.createElement("button");
-    b.innerText = o;
-    b.onclick = ()=>check(o,b);
-    opt.appendChild(b);
-  });
-}
-
-// SPEAKING
-if (q.type === "speak") {
-  const speakBtn = document.createElement("button");
-  speakBtn.innerText = "🎤 Mulai Bicara";
-  speakBtn.onclick = ()=>startSpeaking(q.text);
-  opt.appendChild(speakBtn);
-}
-function startSpeaking(correctText) {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    alert("Browser tidak mendukung speaking 😢");
-    return;
-  }
-
-  const rec = new SpeechRecognition();
-  rec.lang = "en-US";
-  rec.start();
-
-  rec.onresult = (e) => {
-    const spoken = e.results[0][0].transcript.toLowerCase();
-    if (spoken.includes(correctText.toLowerCase())) {
-      correct();
-      alert("Benar! 🎉");
-    } else {
-      alert("Coba lagi 😅\nKamu bilang: " + spoken);
-    }
-  };
-}
-document.addEventListener("DOMContentLoaded", () => {
-  renderMap();
-  updateStats();
-});
+/* ===================== SPE
