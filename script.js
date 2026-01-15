@@ -150,3 +150,8 @@ function speakText(text, lang="en-US") {
   msg.lang = lang;
   speechSynthesis.speak(msg);
 }
+function speakText(text, lang="en-US") {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = lang;
+  speechSynthesis.speak(msg);
+}
