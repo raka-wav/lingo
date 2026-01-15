@@ -177,3 +177,26 @@ if (q.type === "speak") {
   speakBtn.onclick = ()=>startSpeaking(q.text);
   opt.appendChild(speakBtn);
 }
+function startSpeaking(correctText) {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Browser tidak mendukung speaking 😢");
+    return;
+  }
+
+  const rec = new SpeechRecognition();
+  rec.lang = "en-US";
+  rec.start();
+
+  rec.onresult = (e) => {
+    const spoken = e.results[0][0].transcript.toLowerCase();
+    if (spoken.includes(correctText.toLowerCase())) {
+      correct();
+      alert("Benar! 🎉");
+    } else {
+      alert("Coba lagi 😅\nKamu bilang: " + spoken);
+    }
+  };
+}
