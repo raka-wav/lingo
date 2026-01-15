@@ -128,3 +128,20 @@ function updateStreak() {
 }
 
 function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
+const data = {
+  unit1: [
+    { type: "mc", q: "Hello artinya?", o: ["Halo","Dadah"], a: "Halo" },
+
+    { type: "listen", 
+      q: "Dengarkan dan pilih arti yang benar",
+      text: "Good morning",
+      o: ["Selamat pagi", "Selamat malam"],
+      a: "Selamat pagi"
+    },
+
+    { type: "speak",
+      q: "Ucapkan kalimat ini",
+      text: "I love you"
+    }
+  ]
+};
