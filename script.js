@@ -185,3 +185,36 @@ function updateStreak() {
 }
 
 /* ===================== SPE
+  new SpeechSynthesisUtterance(text);
+  msg.lang = lang;
+  speechSynthesis.speak(msg);
+}
+
+function startSpeaking(correctText) {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Browser tidak mendukung speaking 😢");
+    return;
+  }
+
+  const rec = new SpeechRecognition();
+  rec.lang = "en-US";
+  rec.start();
+
+  rec.onresult = (e) => {
+    const spoken = e.results[0][0].transcript.toLowerCase();
+    if (spoken.includes(correctText.toLowerCase())) {
+      alert("Benar! 🎉");
+      correct();
+    } else {
+      alert("Coba lagi 😅\nKamu bilang: " + spoken);
+    }
+  };
+}
+
+/* ===================== UTILS ===================== */
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
+}
