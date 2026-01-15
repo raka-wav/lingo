@@ -155,3 +155,25 @@ function speakText(text, lang="en-US") {
   msg.lang = lang;
   speechSynthesis.speak(msg);
 }
+// LISTENING
+if (q.type === "listen") {
+  const btn = document.createElement("button");
+  btn.innerText = "🔊 Play Audio";
+  btn.onclick = ()=>speakText(q.text);
+  opt.appendChild(btn);
+
+  q.o.forEach(o=>{
+    const b = document.createElement("button");
+    b.innerText = o;
+    b.onclick = ()=>check(o,b);
+    opt.appendChild(b);
+  });
+}
+
+// SPEAKING
+if (q.type === "speak") {
+  const speakBtn = document.createElement("button");
+  speakBtn.innerText = "🎤 Mulai Bicara";
+  speakBtn.onclick = ()=>startSpeaking(q.text);
+  opt.appendChild(speakBtn);
+}
